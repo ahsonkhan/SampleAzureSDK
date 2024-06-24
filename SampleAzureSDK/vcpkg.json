@@ -1,5 +1,6 @@
 {
   "dependencies": [
-    "azure-storage-blobs-cpp"
+    "azure-identity-cpp",
+    "azure-security-keyvault-secrets-cpp"
   ]
 }

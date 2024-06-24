@@ -2,16 +2,26 @@
 //
 
 #include <iostream>
-#include <azure/core.hpp>
-#include <azure/storage/blobs.hpp>
+#include <azure/identity.hpp>
+#include <azure/keyvault/secrets.hpp>
+
+using namespace Azure::Identity;
+using namespace Azure::Security::KeyVault::Secrets;
 
 int main()
 {
-	using namespace Azure::Storage::Blobs;
-	auto blobServiceClient = BlobServiceClient::CreateFromConnectionString("DefaultEndpointsProtocol=https;AccountName=storageaccountname;AccountKey=storageaccountkey;EndpointSuffix=core.windows.net");
-	auto containerClient = blobServiceClient.GetBlobContainerClient("containername");
-	containerClient.CreateIfNotExists();
-    std::cout << "Hello World!\n";
+    try
+    {
+        auto keyVaultUrl = "https://<your-key-vault-name>.vault.azure.net/";
+        auto cred = std::make_shared<ManagedIdentityCredential>();
+        SecretClient client(keyVaultUrl, cred);
+        client.GetSecret("mySecret");
+    }
+    catch (Azure::Core::Credentials::AuthenticationException const& ex)
+    {
+        // Expected 400 error
+        std::cout << ex.what() << std::endl;
+    }
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
